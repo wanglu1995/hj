@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+						   http://www.springframework.org/schema/beans/spring-beans-3.2.xsd ">
+
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <!-- 安全管理器 -->
+        <property name="securityManager" ref="securityManager"/>
+        <!-- 认证页面 -->
+        <property name="loginUrl" value="/login.jsp"/>
+        <property name="filterChainDefinitions">
+            <value>
+                login.jsp = anon
+                index.jsp = authc
+                /user/logout = logout
+                /user/login = anon
+                /** = authc
+            </value>
+        </property>
+    </bean>
+
+    <!--创建安全管理器-->
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="realms">
+            <list>
+                <ref bean="myRealm"/>
+            </list>
+        </property>
+    </bean>
+
+    <!--自定义realm-->
+    <bean id="myRealm" class="com.baizhi.shiro.MyRealm">
+        <property name="credentialsMatcher" ref="credentialsMatcher"/>
+    </bean>
+
+    <!--凭证匹配器-->
+    <bean id="credentialsMatcher" class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+        <property name="hashAlgorithmName" value="md5"/>
+        <property name="hashIterations" value="1024"/>
+    </bean>
+
+</beans>
